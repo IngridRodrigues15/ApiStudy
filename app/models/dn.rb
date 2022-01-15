@@ -1,2 +1,0 @@
-class Dn < ApplicationRecord
-end

@@ -349,6 +349,81 @@ RSpec.describe Api::V1::DnsRecordsController, type: :controller do
   end
 
   describe '#create' do
-    # TODO
+    context 'when params are valid' do
+      let(:ip1) { '1.1.1.1' }
+      let(:lorem) { 'lorem.com' }
+      let(:ipsum) { 'ipsum.com' }
+      let(:dolor) { 'dolor.com' }
+      let(:amet) { 'amet.com' }
+
+      let(:payload) do
+        {
+          dns_records: {
+            ip: ip1,
+            hostnames_attributes: [
+              {
+                hostname: lorem
+              },
+              {
+                hostname: ipsum
+              },
+              {
+                hostname: dolor
+              },
+              {
+                hostname: amet
+              }
+            ]
+          }
+        }.to_json
+      end
+
+      let(:expected_response) do
+        { id: Dns.last.id, ip: ip1}
+      end
+
+      before do
+        request.accept = 'application/json'
+        request.content_type = 'application/json'
+
+        post(:create, body: payload, format: :json)
+      end
+
+      it 'responds with valid response' do
+        expect(response).to have_http_status(:ok)
+      end
+
+      it 'returns dns created record id' do
+        expect(parsed_body).to eq expected_response
+      end
+    end
+
+    context 'when params are invalid' do
+      let(:ip1) { '77,12,12,12' }
+      let(:lorem) { 'lorem.com' }
+
+      let(:payload) do
+        {
+          dns_records: {
+            ip: ip1,
+            hostnames_attributes: [
+              {
+                hostname: lorem
+              }
+            ]
+          }
+        }.to_json
+      end
+
+      before do
+        request.accept = 'application/json'
+        request.content_type = 'application/json'
+        post(:create, body: payload, format: :json)
+      end
+
+      it 'responds with invalid response' do
+        expect(response).to have_http_status(:bad_request)
+      end
+    end
   end
 end
