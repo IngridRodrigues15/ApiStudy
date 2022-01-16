@@ -31,7 +31,7 @@ module DnsRecords
 
     def create_hostnames
       hostnames_attributes.each do |hostnames_attribute|
-        hostname = Hostname.find_or_create_by(domain: hostnames_attribute[:hostname])
+        hostname = Hostname.create(domain: hostnames_attribute[:hostname])
         associate_hostnames_to_dns(dns, hostname)
       end
 
